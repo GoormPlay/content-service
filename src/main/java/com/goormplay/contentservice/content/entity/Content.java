@@ -1,8 +1,7 @@
-package com.goormplay.contentservice.entity;
+package com.goormplay.contentservice.content.entity;
 
-import com.goormplay.contentservice.dto.ContentCardDTO;
-import com.goormplay.contentservice.dto.ContentDTO;
-import com.goormplay.contentservice.dto.ContentDetailDTO;
+import com.goormplay.contentservice.content.dto.ContentCardDTO;
+import com.goormplay.contentservice.content.dto.ContentDetailDTO;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -43,6 +42,7 @@ public class Content {
     private int commentsCount = 0;
 
     private LocalDate releaseDate; // 출시일
+
 
     @CreatedDate
     private LocalDate createdAt;

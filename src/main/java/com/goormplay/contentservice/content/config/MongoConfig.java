@@ -1,4 +1,4 @@
-package com.goormplay.contentservice.config;
+package com.goormplay.contentservice.content.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;

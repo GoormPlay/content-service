@@ -1,4 +1,4 @@
-package com.goormplay.contentservice.dto;
+package com.goormplay.contentservice.content.dto;
 
 import lombok.Data;
 

@@ -1,19 +1,21 @@
-package com.goormplay.contentservice.dto;
+package com.goormplay.contentservice.content.dto;
 
-import com.goormplay.contentservice.entity.Content;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDate;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ContentCardDTO {
     private String id;
     private String title;
     private String kind;
     private String[] genre;
-    private String thumbnail;
     private String videoId;
+    private String thumbnail;
+
 
 }

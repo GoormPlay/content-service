@@ -1,13 +1,14 @@
-package com.goormplay.contentservice.dto;
+package com.goormplay.contentservice.content.dto;
 
 import lombok.Builder;
 import lombok.Data;
+
 
 import java.time.LocalDate;
 
 @Data
 @Builder
-public class ContentDetailDTO {
+public class ContentDTO {
     private String id;
     private String title;
     private String kind;
@@ -20,5 +21,7 @@ public class ContentDetailDTO {
     private String[] director;
     private String videoId;
     private LocalDate releaseDate;
+    private String releaseDateString;
     private String synopsis;
+
 }

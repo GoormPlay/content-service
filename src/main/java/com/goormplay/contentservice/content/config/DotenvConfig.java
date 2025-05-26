@@ -1,4 +1,4 @@
-package com.goormplay.contentservice.config;
+package com.goormplay.contentservice.content.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvEntry;

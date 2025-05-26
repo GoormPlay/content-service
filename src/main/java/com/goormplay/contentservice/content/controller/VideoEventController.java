@@ -1,6 +1,6 @@
-package com.goormplay.contentservice.controller;
+package com.goormplay.contentservice.content.controller;
 
-import com.goormplay.contentservice.dto.VideoEventDto;
+import com.goormplay.contentservice.content.dto.VideoEventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,7 +1,7 @@
-package com.goormplay.contentservice.tool;
+package com.goormplay.contentservice.content.tool;
 
-import com.goormplay.contentservice.dto.ContentDTO;
-import com.goormplay.contentservice.entity.Content;
+import com.goormplay.contentservice.content.dto.ContentDTO;
+import com.goormplay.contentservice.content.entity.Content;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
