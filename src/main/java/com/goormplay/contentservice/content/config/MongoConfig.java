@@ -6,7 +6,6 @@ import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +21,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableMongoAuditing
@@ -45,6 +45,11 @@ public class MongoConfig {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(mongoUri))
                 .serverApi(serverApi)
+                .applyToConnectionPoolSettings(builder -> builder
+                        .maxSize(20)
+                        .minSize(5)
+                        .maxConnectionIdleTime(300000, TimeUnit.MILLISECONDS)
+                )
                 .build();
 
         return MongoClients.create(settings);
