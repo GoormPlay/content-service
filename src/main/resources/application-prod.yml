@@ -1,5 +1,5 @@
 spring:
   data:
     mongodb:
-      uri: ${MONGODB_URL}
+      uri: mongodb+srv://user:goorm0508@goorm-mongodb.svz66jf.mongodb.net/?retryWrites=true&w=majority&appName=goorm-mongoDB
       database: ${MONGODB_DATABASE:content-db}
