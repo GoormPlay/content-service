@@ -65,6 +65,18 @@ public class ContentController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("releaseDate").descending());
         return ResponseEntity.ok(contentService.getLatestContentsWithMeta(pageable));
     }
+
+    // getRecommendedVideos
+
+    @GetMapping("/recommended")
+    public ResponseEntity<Map<String, Object>> getRecommendedVideos(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size, Authentication authentication) {
+        @SuppressWarnings("unchecked")
+        Map<String, String> principal = (Map<String, String>) authentication.getPrincipal();
+        String memberId = principal.get("memberId");
+        Pageable pageable = PageRequest.of(page, size, Sort.by("releaseDate").descending());
+        return ResponseEntity.ok(contentService.getRecommendedVideos(memberId,pageable));
+    }
     @GetMapping("/{id}")
     public ResponseEntity<ContentDetailResponse> getContentDetail(@PathVariable String id,
                                                                   @Nullable Authentication authentication) {

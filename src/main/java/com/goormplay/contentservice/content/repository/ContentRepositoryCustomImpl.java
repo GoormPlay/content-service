@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,31 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom{
                 Aggregation.limit(pageable.getPageSize()),
                 getBaseProjection(),
                 addLatestAttribute()
+        );
+
+        List<VideoDTO> results = mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+                .getMappedResults();
+
+        long total = mongoTemplate.count(Query.query(criteria), Content.class);
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<VideoDTO> findRecommendedContents(List<String> recommendedIds, Pageable pageable) {
+        if (recommendedIds == null || recommendedIds.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        Criteria criteria = Criteria.where("_id").in(recommendedIds);
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(criteria),
+                Aggregation.sort(pageable.getSort()),
+                Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
+                Aggregation.limit(pageable.getPageSize()),
+                getBaseProjection(),
+                addRecommendedAttribute()
         );
 
         List<VideoDTO> results = mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)

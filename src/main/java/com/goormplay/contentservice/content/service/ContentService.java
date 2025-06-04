@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goormplay.contentservice.content.client.ContentInteractionClient;
 import com.goormplay.contentservice.content.client.ContentReviewClient;
-import com.goormplay.contentservice.content.dto.ContentCardDTO;
-import com.goormplay.contentservice.content.dto.ContentDTO;
-import com.goormplay.contentservice.content.dto.ReviewDTO;
-import com.goormplay.contentservice.content.dto.VideoDTO;
+import com.goormplay.contentservice.content.dto.*;
 import com.goormplay.contentservice.content.dto.response.ContentDetailResponse;
 import com.goormplay.contentservice.content.entity.Content;
 import com.goormplay.contentservice.content.repository.ContentRepository;
@@ -42,6 +39,7 @@ public class ContentService {
     private final ContentMapper contentMapper;
     private final ContentInteractionClient contentInteractionClient;
     private final ContentReviewClient contentReviewClient;
+    private final PythonClient pythonClient;
 
     // 상세 페이지 조회
     public ContentDetailResponse getContentDetailById(String contentId, @Nullable String userId) {
@@ -87,18 +85,21 @@ public class ContentService {
     }
 
     // 사용자별 추천 컨텐츠 조회
-    public List<VideoDTO> getRecommendedContentsForUser(List<String> contentIds) {
-        if (contentIds.isEmpty()) {
-            return Collections.emptyList();
-        }
+    public Map<String, Object> getRecommendedVideos(String userId, Pageable pageable) {
+        RecommendationResponse recommendation = pythonClient.fetchRecommendation(userId);
+        log.info("Recommendation: {}", recommendation);
+        List<String> recommendedIds = recommendation.getContentIds();
+        Page<VideoDTO> page = contentRepository.findRecommendedContents(recommendedIds, pageable);
+        Map<String, Object> response = new HashMap<>();
+        response.put("contents", page.getContent());
+        response.put("page", page.getNumber());
+        response.put("size", page.getSize());
+        response.put("totalElements", page.getTotalElements());
+        response.put("totalPages", page.getTotalPages());
+        response.put("isLast", page.isLast());
 
-        List<ObjectId> objectIds = contentIds.stream()
-                .map(ObjectId::new)
-                .collect(Collectors.toList());
-
-        return contentRepository.findByIdsAsRecommended(objectIds);
+        return response;
     }
-
     // 일반적인 트렌딩/최신 컨텐츠 조회
     public List<VideoDTO> getTrendingContents() {
         return contentRepository.findAllAsTrending();

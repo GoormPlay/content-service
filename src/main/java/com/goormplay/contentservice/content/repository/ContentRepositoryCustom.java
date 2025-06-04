@@ -22,6 +22,6 @@ public interface ContentRepositoryCustom {
     List<VideoDTO> findAllWithBaseFields();
     List<VideoDTO> findAllAsTrending();
     List<VideoDTO> findAllAsLatest();
-
+    Page<VideoDTO> findRecommendedContents(List<String> recommendedIds, Pageable pageable);
     List<VideoDTO> findByIdsAsRecommended(List<ObjectId> contentIds);
 }
