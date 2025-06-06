@@ -9,18 +9,13 @@ import com.goormplay.contentservice.content.dto.*;
 import com.goormplay.contentservice.content.dto.response.ContentDetailResponse;
 import com.goormplay.contentservice.content.entity.Content;
 import com.goormplay.contentservice.content.repository.ContentRepository;
-import com.goormplay.contentservice.content.tool.ContentMapper;
 import jakarta.annotation.Nullable;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
