@@ -12,9 +12,19 @@ public class FeignHeaderConfig {
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            ServletRequestAttributes attributes =
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
             if (attributes != null) {
                 HttpServletRequest request = attributes.getRequest();
+
+                // ✅ Authorization 헤더 전달
+                String authorization = request.getHeader("Authorization");
+                if (authorization != null) {
+                    requestTemplate.header("Authorization", authorization);
+                }
+
+                // ✅ X-From-Gateway 헤더도 계속 유지
                 String fromGateway = request.getHeader("X-From-Gateway");
                 if (fromGateway != null) {
                     requestTemplate.header("X-From-Gateway", fromGateway);
