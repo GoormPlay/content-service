@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 public class ContentService {
     private final ContentRepository contentRepository;
     private final ObjectMapper objectMapper;
-    private final ContentMapper contentMapper;
     private final ContentInteractionClient contentInteractionClient;
     private final ContentReviewClient contentReviewClient;
     private final PythonClient pythonClient;
