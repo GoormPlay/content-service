@@ -18,29 +18,14 @@ import java.util.List;
 @EnableWebSecurity
 @Slf4j
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(member -> member
-                        .anyRequest().permitAll() // 🔐 모든 요청 허용 (Gateway에서 이미 검증)
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll() // 모든 요청 허용
                 )
                 .build();
-//                .addFilterBefore(new JwtParsingFilter(), UsernamePasswordAuthenticationFilter.class);
-
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(false); // Gateway에서 인증하므로 false
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
