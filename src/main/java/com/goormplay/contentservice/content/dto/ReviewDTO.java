@@ -15,6 +15,4 @@ public class ReviewDTO {
     private Integer rating;
     private String comment;
     private LocalDateTime createdAt;
-    @Builder.Default
-    private boolean isAuthor = false;
 }

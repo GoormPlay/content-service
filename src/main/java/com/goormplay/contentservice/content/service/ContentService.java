@@ -34,13 +34,6 @@ public class ContentService {
         // 사용자별 좋아요 상태 확인 (비로그인 사용자는 false)
         boolean isLiked = userId != null && checkIsLiked(userId, videoId);
         Double averageRating = 2.0; //임시
-        // 리뷰에 사용자 작성 여부 표시
-        reviews = reviews.stream()
-                .peek(review -> {
-                    boolean isAuthor = userId != null && userId.equals(review.getUserId());
-                    review.setAuthor(isAuthor);
-                })
-                .collect(Collectors.toList());
 
         return ContentDetailResponse.builder()
                 .content(content)
