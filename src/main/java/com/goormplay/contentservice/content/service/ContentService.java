@@ -66,7 +66,7 @@ public class ContentService {
     public Map<String, Object> getRecommendedVideos(String userId, Pageable pageable) {
         RecommendationResponse recommendation = pythonClient.fetchRecommendation(userId);
         log.info("Recommendation: {}", recommendation);
-        List<String> recommendedIds = recommendation.getContentIds();
+        List<String> recommendedIds = recommendation.getVideoIds();
         Page<VideoPreviewDTO> page = contentRepository.findRecommendedContents(recommendedIds, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("contents", page.getContent());

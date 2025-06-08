@@ -151,9 +151,9 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom {
     }
 
     @Override
-    public List<VideoPreviewDTO> findByIdsAsRecommended(List<ObjectId> contentIds) {
+    public List<VideoPreviewDTO> findByIdsAsRecommended(List<String> videoIds) {
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("_id").in(contentIds)),
+                Aggregation.match(Criteria.where("videoId").in(videoIds)),
                 getPreviewProjection(),
                 addRecommendedAttribute()
         );

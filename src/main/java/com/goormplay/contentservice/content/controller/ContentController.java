@@ -26,7 +26,7 @@ public class ContentController {
     private final ContentService contentService;
 
     @PostMapping("/bulk-ids")
-    public List<VideoPreviewDTO> getContentCardsByContentIds(@RequestBody VideoIdsRequest request) {
+    public List<VideoPreviewDTO> getContentCardsByVideoIds(@RequestBody VideoIdsRequest request) {
         log.info("Received request for contents with ids: {}", request.getVideoIds());
         List<VideoPreviewDTO> results = contentService.getContentCardsByVideoIds(request.getVideoIds());
         log.info("Found {} contents", results.size());
