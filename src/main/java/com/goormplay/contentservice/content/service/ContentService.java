@@ -1,27 +1,16 @@
 package com.goormplay.contentservice.content.service;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goormplay.contentservice.content.client.ContentInteractionClient;
 import com.goormplay.contentservice.content.client.ContentReviewClient;
 import com.goormplay.contentservice.content.dto.*;
 import com.goormplay.contentservice.content.dto.response.ContentDetailResponse;
-import com.goormplay.contentservice.content.entity.Content;
 import com.goormplay.contentservice.content.repository.ContentRepository;
 import jakarta.annotation.Nullable;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,21 +19,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ContentService {
     private final ContentRepository contentRepository;
-    private final ObjectMapper objectMapper;
     private final ContentInteractionClient contentInteractionClient;
     private final ContentReviewClient contentReviewClient;
     private final PythonClient pythonClient;
 
     // 상세 페이지 조회
-    public ContentDetailResponse getContentDetailById(String contentId, @Nullable String userId) {
-        VideoDTO content = contentRepository.findContentDetailById(contentId)
+    public ContentDetailResponse getContentDetailById(String videoId, @Nullable String userId) {
+        VideoDTO content = contentRepository.findContentDetailByVideoId(videoId)
                 .orElseThrow(() -> new NotFoundException("Content not found"));
 
         // 리뷰 목록 조회
-        List<ReviewDTO> reviews = contentReviewClient.getReviews(contentId);
+        List<ReviewDTO> reviews = contentReviewClient.getReviews(videoId);
 
         // 사용자별 좋아요 상태 확인 (비로그인 사용자는 false)
-        boolean isLiked = userId != null && checkIsLiked(userId, contentId);
+        boolean isLiked = userId != null && checkIsLiked(userId, videoId);
         Double averageRating = 2.0; //임시
         // 리뷰에 사용자 작성 여부 표시
         reviews = reviews.stream()
@@ -60,22 +48,18 @@ public class ContentService {
                 .reviews(reviews)
                 .averageRating(averageRating)
                 .build();
-
     }
 
-    private boolean checkIsLiked(String userId, String contentId) {
+    private boolean checkIsLiked(String userId, String videoId) {
         return Optional.ofNullable(userId)
-                .map(id -> contentInteractionClient.isContentLikedByUser(id, contentId))
+                .map(id -> contentInteractionClient.isContentLikedByUser(id, videoId))
                 .orElse(false);
     }
 
     // 컨텐츠 ID 목록으로 카드 조회
-    public List<VideoDTO> getContentCardsByIds(List<String> contentIds) {
-        List<ObjectId> objectIds = contentIds.stream()
-                .map(ObjectId::new)
-                .collect(Collectors.toList());
+    public List<VideoPreviewDTO> getContentCardsByVideoIds(List<String> videoIds) {
 
-        return contentRepository.findContentCardsByIds(objectIds);
+        return contentRepository.findContentCardsByVideoIds(videoIds);
     }
 
     // 사용자별 추천 컨텐츠 조회
@@ -83,7 +67,7 @@ public class ContentService {
         RecommendationResponse recommendation = pythonClient.fetchRecommendation(userId);
         log.info("Recommendation: {}", recommendation);
         List<String> recommendedIds = recommendation.getContentIds();
-        Page<VideoDTO> page = contentRepository.findRecommendedContents(recommendedIds, pageable);
+        Page<VideoPreviewDTO> page = contentRepository.findRecommendedContents(recommendedIds, pageable);
         Map<String, Object> response = new HashMap<>();
         response.put("contents", page.getContent());
         response.put("page", page.getNumber());
@@ -93,15 +77,15 @@ public class ContentService {
         response.put("isLast", page.isLast());
         return response;
     }
+
     // 일반적인 트렌딩/최신 컨텐츠 조회
-    public List<VideoDTO> getTrendingContents() {
+    public List<VideoPreviewDTO> getTrendingContents() {
         return contentRepository.findAllAsTrending();
     }
 
-
     // 최신 컨텐츠 카드 조회 (페이징)
     public Map<String, Object> getLatestContentsWithMeta(Pageable pageable) {
-        Page<VideoDTO> page = contentRepository.findLatestContents(pageable);
+        Page<VideoPreviewDTO> page = contentRepository.findLatestContents(pageable);
         Map<String, Object> response = new HashMap<>();
         log.info("Page: {}", page);
         response.put("contents", page.getContent());
@@ -115,62 +99,7 @@ public class ContentService {
     }
 
     // 최신 컨텐츠 카드 조회 (리스트)
-    public List<VideoDTO> getLatestContentCards(int limit) {
+    public List<VideoPreviewDTO> getLatestContentCards(int limit) {
         return contentRepository.findLatestContentCards(limit);
     }
-
-    // 테스트 데이터 관련 메서드
-    @Transactional
-    public void saveTestContents() throws IOException {
-        List<ContentDTO> contents = importContentsFromJson();
-        contentRepository.saveAll(contents.stream()
-                .map(this::toEntity)
-                .collect(Collectors.toList()));
-    }
-
-    private Content toEntity(ContentDTO dto) {
-        return Content.builder()
-                // ... DTO to Entity 매핑
-                .build();
-    }
-
-
-
-    // 테스트 데이터 임포트
-    private List<ContentDTO> importContentsFromJson() throws IOException {
-        try (InputStream is = getClass().getResourceAsStream("/scripts/test-contents.json")) {
-            JsonNode root = objectMapper.readTree(is);
-            return objectMapper.convertValue(root.get("test-contents"),
-                    new TypeReference<List<ContentDTO>>() {});
-        }
-    }
-
-    // 테스트 데이터 변환
-    public List<ContentCardDTO> getTestContentCard() throws IOException {
-
-            File jsonFile = new File("scripts/test-contents.json");
-        return objectMapper.readValue(
-                jsonFile,
-                new TypeReference<List<ContentCardDTO>>() {}
-        );
-    }
-
-    // 테스트 데이터 cardDTO 조회
-    public List<VideoDTO> getTestLatestContentCards()  {
-      return contentRepository.findAllLatestContentCards();
-
-    }
-
-    // 사용자 좋아요 데이터 조회
-
-
-
-
-    // 사용자 맞춤 컨텐츠 조회 (예정)
-    public List<ContentCardDTO> getRecommendedContents(String userId) {
-        // Kafka에서 받아오기
-        return null;
-    }
-
-
 }

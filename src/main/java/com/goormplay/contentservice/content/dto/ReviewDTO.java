@@ -3,7 +3,6 @@ package com.goormplay.contentservice.content.dto;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
