@@ -1,7 +1,4 @@
 package com.goormplay.contentservice.content.entity;
-
-import com.goormplay.contentservice.content.dto.ContentCardDTO;
-import com.goormplay.contentservice.content.dto.ContentDetailDTO;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -48,40 +45,5 @@ public class Content {
     private LocalDate createdAt;
     @LastModifiedDate
     private LocalDate updatedAt;
-
-
-
-    // 컨텐츠 Card DT
-    public ContentCardDTO contentToContentCardDto(Content content){
-        return ContentCardDTO.builder()
-                .id(content.getId())
-                .title(content.getTitle())
-                .kind(content.getKind())
-                .genre(content.getGenre())
-                .thumbnail(content.getThumbnail())
-                .videoId(content.getVideoId())
-                .build();
-
-    }
-    // 컨텐츠 Detail DTO
-    public ContentDetailDTO contentToContentDetailDto(Content content){
-        return ContentDetailDTO.builder()
-                .id(content.getId())
-                .title(content.getTitle())
-                .kind(content.getKind())
-                .genre(content.getGenre())
-                .year(content.getYear())
-                .KMRB(content.getKMRB())
-                .cast(content.getCast())
-                .director(content.getDirector())
-                .videoId(content.getVideoId())
-                .releaseDate(content.getReleaseDate())
-                .thumbnail(content.getThumbnail())
-                .synopsis(content.getSynopsis())
-                .provider(content.getProvider())
-                .build();
-    }
-
-
 
 }

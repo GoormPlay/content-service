@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "ui-service", configuration = FeignHeaderConfig.class)
 public interface ContentInteractionClient {
-    @GetMapping("/ui/content/{contentId}/liked/{userId}")
-    boolean isContentLikedByUser(@PathVariable String contentId, @PathVariable String userId);
+    @GetMapping("/ui/content/{videoId}/liked/{userId}")
+    boolean isContentLikedByUser(@PathVariable String videoId, @PathVariable String userId);
 }

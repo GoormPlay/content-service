@@ -11,6 +11,6 @@ import java.util.List;
 
 @FeignClient(name = "review-service", configuration = FeignHeaderConfig.class)
 public interface ContentReviewClient {
-    @GetMapping("/review/{contentId}/list")
-    List<ReviewDTO> getReviews(@PathVariable String contentId);
+    @GetMapping("/review/{videoId}/list")
+    List<ReviewDTO> getReviews(@PathVariable String videoId);
 }

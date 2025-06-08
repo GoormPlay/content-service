@@ -1,6 +1,7 @@
 package com.goormplay.contentservice.content.repository;
 
 import com.goormplay.contentservice.content.dto.VideoDTO;
+import com.goormplay.contentservice.content.dto.VideoPreviewDTO;
 import com.goormplay.contentservice.content.entity.Content;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +25,11 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class ContentRepositoryCustomImpl implements ContentRepositoryCustom{
+public class ContentRepositoryCustomImpl implements ContentRepositoryCustom {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public Page<VideoDTO> findLatestContents(Pageable pageable) {
+    public Page<VideoPreviewDTO> findLatestContents(Pageable pageable) {
         Criteria criteria = Criteria.where("releaseDate").exists(true);
 
         Aggregation aggregation = Aggregation.newAggregation(
@@ -36,36 +37,36 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom{
                 Aggregation.sort(pageable.getSort()),
                 Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
                 Aggregation.limit(pageable.getPageSize()),
-                getBaseProjection(),
-                addLatestAttribute()
+                getPreviewProjection()
+//                ,addLatestAttribute()
         );
 
-        List<VideoDTO> results = mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        List<VideoPreviewDTO> results = mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
-        log.info("findLatestContents = {}",results);
+        log.info("findLatestContents = {}", results);
         long total = mongoTemplate.count(Query.query(criteria), Content.class);
 
         return new PageImpl<>(results, pageable, total);
     }
 
     @Override
-    public Page<VideoDTO> findRecommendedContents(List<String> recommendedIds, Pageable pageable) {
+    public Page<VideoPreviewDTO> findRecommendedContents(List<String> recommendedIds, Pageable pageable) {
         if (recommendedIds == null || recommendedIds.isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
-        Criteria criteria = Criteria.where("_id").in(recommendedIds);
+        Criteria criteria = Criteria.where("vidoId").in(recommendedIds);
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.match(criteria),
                 Aggregation.sort(pageable.getSort()),
                 Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
                 Aggregation.limit(pageable.getPageSize()),
-                getBaseProjection(),
-                addRecommendedAttribute()
+                getPreviewProjection()
+//                ,addRecommendedAttribute()
         );
 
-        List<VideoDTO> results = mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        List<VideoPreviewDTO> results = mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
 
         long total = mongoTemplate.count(Query.query(criteria), Content.class);
@@ -74,110 +75,112 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom{
     }
 
     @Override
-    public List<VideoDTO> findAllLatestContentCards() {
-        Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.sort(Sort.by(Sort.Direction.DESC, "releaseDate")),
-                getBaseProjection(),
-                addLatestAttribute()
-        );
-
-        return mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
-                .getMappedResults();
-    }
-
-    @Override
-    public List<VideoDTO> findLatestContentCards(int limit) {
+    public List<VideoPreviewDTO> findLatestContentCards(int limit) {
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.sort(Sort.by(Sort.Direction.DESC, "releaseDate")),
                 Aggregation.limit(limit),
-                getBaseProjection(),
-                addLatestAttribute()
+                getPreviewProjection()
+//                ,addLatestAttribute()
         );
 
-        return mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        return mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
     }
 
     @Override
-    public List<VideoDTO> findContentCardsByIds(List<ObjectId> ids) {
+    public List<VideoPreviewDTO> findContentCardsByVideoIds(List<String> videoIds) {
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("_id").in(ids)),
-                getBaseProjection(),
-                addRecommendedAttribute()
+                Aggregation.match(Criteria.where("videoId").in(videoIds)),
+                getPreviewProjection()
+//                ,addRecommendedAttribute()
         );
 
-        return mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        return mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
     }
 
     @Override
-    public Optional<VideoDTO> findContentDetailById(String id) {
+    public Optional<VideoDTO> findContentDetailByVideoId(String videoId) {
         try {
-            ObjectId objectId = new ObjectId(id);
-            Criteria criteria = Criteria.where("_id").is(objectId);
+            Criteria criteria = Criteria.where("videoId").is(videoId);
 
             Aggregation aggregation = Aggregation.newAggregation(
                     Aggregation.match(criteria),
-                    getBaseProjection(),
-                    addDefaultAttributes()
+                    getBaseProjection()
             );
 
             return Optional.ofNullable(mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
                     .getUniqueMappedResult());
-        }catch (IllegalArgumentException e){
-            log.error("Invalid ObjectId format: {}", id);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid videoId format: {}", videoId);
             return Optional.empty();
         }
     }
 
     @Override
-    public List<VideoDTO> findAllWithBaseFields() {
+    public List<VideoPreviewDTO> findAllWithBaseFields() {
         Aggregation aggregation = Aggregation.newAggregation(
-                getBaseProjection(),
+                getPreviewProjection(),
                 addDefaultAttributes()
         );
 
-        return mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        return mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
     }
 
     @Override
-    public List<VideoDTO> findAllAsTrending() {
+    public List<VideoPreviewDTO> findAllAsTrending() {
         Aggregation aggregation = Aggregation.newAggregation(
-                getBaseProjection(),
-                addTrendingAttribute()
+                getPreviewProjection()
+                ,addTrendingAttribute()
         );
 
-        return mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        return mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
     }
 
     @Override
-    public List<VideoDTO> findAllAsLatest() {
+    public List<VideoPreviewDTO> findAllAsLatest() {
         Aggregation aggregation = Aggregation.newAggregation(
-                getBaseProjection(),
+                getPreviewProjection(),
                 addLatestAttribute()
         );
 
-        return mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        return mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
     }
 
     @Override
-    public List<VideoDTO> findByIdsAsRecommended(List<ObjectId> contentIds) {
+    public List<VideoPreviewDTO> findByIdsAsRecommended(List<String> videoIds) {
         Aggregation aggregation = Aggregation.newAggregation(
-                // 1. ID 기반 필터링
-                Aggregation.match(Criteria.where("_id").in(contentIds)),
-                // 2. 기본 필드 프로젝션
-                getBaseProjection(),
-                // 3. recommended = true 설정
+                Aggregation.match(Criteria.where("videoId").in(videoIds)),
+                getPreviewProjection(),
                 addRecommendedAttribute()
         );
 
-        return mongoTemplate.aggregate(aggregation, "contents", VideoDTO.class)
+        return mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
     }
 
+    @Override
+    public List<VideoPreviewDTO> findAllLatestContentCards() {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.sort(Sort.by(Sort.Direction.DESC, "releaseDate")),
+                getPreviewProjection(),
+                addLatestAttribute()
+        );
+
+        return mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
+                .getMappedResults();
+    }
+
+    private ProjectionOperation getPreviewProjection() {
+        return Aggregation.project()
+                .and("videoId").as("videoId")
+                .and("title").as("title")
+                .and("kind").as("kind")
+                .and("genre").as("genre");
+    }
 
     private ProjectionOperation getBaseProjection() {
         return Aggregation.project()
@@ -227,37 +230,5 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom{
                 .addField("recommended").withValue(true)
                 .build();
     }
-
-    private ProjectionOperation getCardProjection() {
-        return Aggregation.project()
-                .and("_id").as("id")
-                .and("title").as("title")
-                .and("kind").as("kind")
-                .and("genre").as("genre")
-                .and("thumbnail").as("thumbnail")
-                .and("videoId").as("videoId");
-    }
-
-
-
-
-
-    private ProjectionOperation getDetailProjection() {
-        return Aggregation.project()
-                .and("_id").as("id")
-                .and("title").as("title")
-                .and("kind").as("kind")
-                .and("genre").as("genre")
-                .and("year").as("year")
-                .and("KMRB").as("KMRB")
-                .and("cast").as("cast")
-                .and("director").as("director")
-                .and("videoId").as("videoId")
-                .and("releaseDate").as("releaseDate")
-                .and("thumbnail").as("thumbnail")
-                .and("synopsis").as("synopsis")
-                .and("provider").as("provider");
-    }
-
 }
 

@@ -3,7 +3,6 @@ package com.goormplay.contentservice.content.dto;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -16,6 +15,4 @@ public class ReviewDTO {
     private Integer rating;
     private String comment;
     private LocalDateTime createdAt;
-    @Builder.Default
-    private boolean isAuthor = false;
 }
