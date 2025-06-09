@@ -45,7 +45,7 @@ public class ContentService {
 
     private boolean checkIsLiked(String userId, String videoId) {
         return Optional.ofNullable(userId)
-                .map(id -> contentInteractionClient.isContentLikedByUser(id, videoId))
+                .map(id -> contentInteractionClient.isContentLikedByUser(videoId, id))
                 .orElse(false);
     }
 
