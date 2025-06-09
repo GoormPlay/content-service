@@ -55,7 +55,7 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
-        Criteria criteria = Criteria.where("vidoId").in(recommendedIds);
+        Criteria criteria = Criteria.where("videoId").in(recommendedIds);
 
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.match(criteria),
