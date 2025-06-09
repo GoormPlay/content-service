@@ -1,5 +1,6 @@
 package com.goormplay.contentservice.content.controller;
 
+import com.goormplay.contentservice.content.dto.ContentDetailRequest;
 import com.goormplay.contentservice.content.dto.VideoIdsRequest;
 import com.goormplay.contentservice.content.dto.VideoPreviewDTO;
 import com.goormplay.contentservice.content.dto.response.ContentDetailResponse;
@@ -51,14 +52,14 @@ public class ContentController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("releaseDate").descending());
         return ResponseEntity.ok(contentService.getRecommendedVideos(memberId,pageable));
     }
-    @GetMapping("/{videoId}")
-    public ResponseEntity<ContentDetailResponse> getContentDetail(@PathVariable String videoId,
+    @PostMapping("/detail")
+    public ResponseEntity<ContentDetailResponse> getContentDetail(@RequestBody ContentDetailRequest request,
                                                                   @Nullable Authentication authentication) {
         try {
             String userId = Optional.ofNullable(authentication)
                     .map(Authentication::getName)
                     .orElse(null);
-
+            String videoId = request.getVideoId();
             ContentDetailResponse response = contentService.getContentDetailById(videoId, userId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
