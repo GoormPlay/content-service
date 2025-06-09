@@ -44,9 +44,15 @@ public class ContentService {
     }
 
     private boolean checkIsLiked(String userId, String videoId) {
-        return Optional.ofNullable(userId)
-                .map(id -> contentInteractionClient.isContentLikedByUser(videoId, id))
-                .orElse(false);
+        log.info("Content Service - Checking like status - userId: {}, videoId: {}", userId, videoId);
+        try {
+            boolean result = contentInteractionClient.isContentLikedByUser(videoId, userId);
+            log.info("Content Service - Like status result: {} for videoId: {}, userId: {}", result, videoId, userId);
+            return result;
+        } catch (Exception e) {
+            log.error("Content Service - Error checking like status: ", e);
+            return false;
+        }
     }
 
     // 컨텐츠 ID 목록으로 카드 조회
