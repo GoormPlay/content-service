@@ -86,14 +86,12 @@ public class ContentService {
     public Map<String, Object> getLatestContentsWithMeta(Pageable pageable) {
         Page<VideoPreviewDTO> page = contentRepository.findLatestContents(pageable);
         Map<String, Object> response = new HashMap<>();
-        log.info("Page: {}", page);
         response.put("contents", page.getContent());
         response.put("page", page.getNumber());
         response.put("size", page.getSize());
         response.put("totalElements", page.getTotalElements());
         response.put("totalPages", page.getTotalPages());
         response.put("isLast", page.isLast());
-        log.info("Response: {}", response);
         return response;
     }
 
