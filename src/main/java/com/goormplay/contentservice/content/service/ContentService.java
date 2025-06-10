@@ -25,6 +25,7 @@ public class ContentService {
 
     // 상세 페이지 조회
     public ContentDetailResponse getContentDetailById(String videoId, @Nullable String userId) {
+        log.info("getContentDetailById called. userId: {}, videoId: {}", userId, videoId);
         VideoDTO content = contentRepository.findContentDetailByVideoId(videoId)
                 .orElseThrow(() -> new NotFoundException("Content not found"));
 
@@ -50,7 +51,7 @@ public class ContentService {
             log.info("Content Service - Like status result: {} for videoId: {}, userId: {}", result, videoId, userId);
             return result;
         } catch (Exception e) {
-            log.error("Content Service - Error checking like status: ", e);
+            log.error("Content Service - Error checking like status:{}",  e.getMessage(),e);
             return false;
         }
     }

@@ -62,7 +62,7 @@ public class ContentController {
             String userId = Optional.ofNullable(authentication)
                     .map(Authentication::getName)
                     .orElse(null);
-
+            log.info("Received request for contents with userId: {}", userId);
             ContentDetailResponse response = contentService.getContentDetailById(videoId, userId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
