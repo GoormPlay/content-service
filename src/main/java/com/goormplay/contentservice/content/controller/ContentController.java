@@ -1,5 +1,7 @@
 package com.goormplay.contentservice.content.controller;
 
+import com.goormplay.contentservice.Security.AuthUtil;
+import com.goormplay.contentservice.content.dto.ContentDetailRequest;
 import com.goormplay.contentservice.content.dto.VideoIdsRequest;
 import com.goormplay.contentservice.content.dto.VideoPreviewDTO;
 import com.goormplay.contentservice.content.dto.response.ContentDetailResponse;
@@ -14,9 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/contents")
@@ -51,14 +55,20 @@ public class ContentController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("releaseDate").descending());
         return ResponseEntity.ok(contentService.getRecommendedVideos(memberId,pageable));
     }
-    @GetMapping("/{videoId}")
-    public ResponseEntity<ContentDetailResponse> getContentDetail(@PathVariable String videoId,
+    @GetMapping("/detail")
+    public ResponseEntity<ContentDetailResponse> getContentDetail(@RequestParam String videoId,
                                                                   @Nullable Authentication authentication) {
         try {
             String userId = Optional.ofNullable(authentication)
-                    .map(Authentication::getName)
+                    .map(auth -> {
+                        Object principal = auth.getPrincipal();
+                        if (principal instanceof Map<?, ?> map) {
+                            return (String) map.get("memberId");
+                        }
+                        return null;
+                    })
                     .orElse(null);
-
+            log.info("Received request for contents with userId: {}", userId);
             ContentDetailResponse response = contentService.getContentDetailById(videoId, userId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {

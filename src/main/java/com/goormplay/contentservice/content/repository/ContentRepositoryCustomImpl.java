@@ -43,7 +43,6 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom {
 
         List<VideoPreviewDTO> results = mongoTemplate.aggregate(aggregation, "contents", VideoPreviewDTO.class)
                 .getMappedResults();
-        log.info("findLatestContents = {}", results);
         long total = mongoTemplate.count(Query.query(criteria), Content.class);
 
         return new PageImpl<>(results, pageable, total);

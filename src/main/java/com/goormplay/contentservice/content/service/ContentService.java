@@ -25,6 +25,7 @@ public class ContentService {
 
     // 상세 페이지 조회
     public ContentDetailResponse getContentDetailById(String videoId, @Nullable String userId) {
+        log.info("getContentDetailById called. userId: {}, videoId: {}", userId, videoId);
         VideoDTO content = contentRepository.findContentDetailByVideoId(videoId)
                 .orElseThrow(() -> new NotFoundException("Content not found"));
 
@@ -44,9 +45,15 @@ public class ContentService {
     }
 
     private boolean checkIsLiked(String userId, String videoId) {
-        return Optional.ofNullable(userId)
-                .map(id -> contentInteractionClient.isContentLikedByUser(videoId, id))
-                .orElse(false);
+        log.info("Content Service - Checking like status - userId: {}, videoId: {}", userId, videoId);
+        try {
+            boolean result = contentInteractionClient.isContentLikedByUser(videoId, userId);
+            log.info("Content Service - Like status result: {} for videoId: {}, userId: {}", result, videoId, userId);
+            return result;
+        } catch (Exception e) {
+            log.error("Content Service - Error checking like status:{}",  e.getMessage(),e);
+            return false;
+        }
     }
 
     // 컨텐츠 ID 목록으로 카드 조회
@@ -80,14 +87,12 @@ public class ContentService {
     public Map<String, Object> getLatestContentsWithMeta(Pageable pageable) {
         Page<VideoPreviewDTO> page = contentRepository.findLatestContents(pageable);
         Map<String, Object> response = new HashMap<>();
-        log.info("Page: {}", page);
         response.put("contents", page.getContent());
         response.put("page", page.getNumber());
         response.put("size", page.getSize());
         response.put("totalElements", page.getTotalElements());
         response.put("totalPages", page.getTotalPages());
         response.put("isLast", page.isLast());
-        log.info("Response: {}", response);
         return response;
     }
 

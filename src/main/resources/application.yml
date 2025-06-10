@@ -18,5 +18,11 @@ eureka:
     prefer-ip-address: true
     hostname: ${HOSTNAME:localhost}
     instance-id: ${spring.application.name}:${random.value}
+logging:
+  level:
+    com.your.package.ContentInteractionClient: DEBUG
+    org.springframework.web.client.RestTemplate: ERROR
+    org.springframework.web: WARN
+    root: INFO
 server:
   port: 8083
