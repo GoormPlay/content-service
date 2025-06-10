@@ -4,9 +4,10 @@ import com.goormplay.contentservice.Security.FeignHeaderConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "ui-service", configuration = FeignHeaderConfig.class)
 public interface ContentInteractionClient {
-    @GetMapping("/ui/content/{videoId}/liked/{userId}")
-    boolean isContentLikedByUser(@PathVariable String videoId, @PathVariable String userId);
+    @GetMapping("/ui/content/liked")
+    boolean isContentLikedByUser(@RequestParam String videoId, @RequestParam String userId);
 }
