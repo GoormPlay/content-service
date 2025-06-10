@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -58,9 +59,15 @@ public class ContentController {
     public ResponseEntity<ContentDetailResponse> getContentDetail(@RequestParam String videoId,
                                                                   @Nullable Authentication authentication) {
         try {
-            @SuppressWarnings("unchecked")
-            Map<String, String> principal = (Map<String, String>) authentication.getPrincipal();
-            String userId = principal.get("memberId");
+            String userId = Optional.ofNullable(authentication)
+                    .map(auth -> {
+                        Object principal = auth.getPrincipal();
+                        if (principal instanceof Map<?, ?> map) {
+                            return (String) map.get("memberId");
+                        }
+                        return null;
+                    })
+                    .orElse(null);
             log.info("Received request for contents with userId: {}", userId);
             ContentDetailResponse response = contentService.getContentDetailById(videoId, userId);
             return ResponseEntity.ok(response);
