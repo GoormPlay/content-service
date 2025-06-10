@@ -1,5 +1,6 @@
 package com.goormplay.contentservice.content.controller;
 
+import com.goormplay.contentservice.Security.AuthUtil;
 import com.goormplay.contentservice.content.dto.ContentDetailRequest;
 import com.goormplay.contentservice.content.dto.VideoIdsRequest;
 import com.goormplay.contentservice.content.dto.VideoPreviewDTO;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @Slf4j
 public class ContentController {
     private final ContentService contentService;
+    private final AuthUtil authUtil;
 
     @PostMapping("/bulk-ids")
     public List<VideoPreviewDTO> getContentCardsByVideoIds(@RequestBody VideoIdsRequest request) {
@@ -59,9 +61,7 @@ public class ContentController {
     public ResponseEntity<ContentDetailResponse> getContentDetail(@RequestParam String videoId,
                                                                   @Nullable Authentication authentication) {
         try {
-            String userId = Optional.ofNullable(authentication)
-                    .map(Authentication::getName)
-                    .orElse(null);
+            String userId = AuthUtil.getMemberId(authentication);
             log.info("Received request for contents with userId: {}", userId);
             ContentDetailResponse response = contentService.getContentDetailById(videoId, userId);
             return ResponseEntity.ok(response);
