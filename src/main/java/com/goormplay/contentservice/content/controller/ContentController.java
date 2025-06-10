@@ -17,11 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/contents")
@@ -29,7 +27,6 @@ import java.util.Optional;
 @Slf4j
 public class ContentController {
     private final ContentService contentService;
-    private final AuthUtil authUtil;
 
     @PostMapping("/bulk-ids")
     public List<VideoPreviewDTO> getContentCardsByVideoIds(@RequestBody VideoIdsRequest request) {
@@ -61,7 +58,9 @@ public class ContentController {
     public ResponseEntity<ContentDetailResponse> getContentDetail(@RequestParam String videoId,
                                                                   @Nullable Authentication authentication) {
         try {
-            String userId = AuthUtil.getMemberId(authentication);
+            @SuppressWarnings("unchecked")
+            Map<String, String> principal = (Map<String, String>) authentication.getPrincipal();
+            String userId = principal.get("memberId");
             log.info("Received request for contents with userId: {}", userId);
             ContentDetailResponse response = contentService.getContentDetailById(videoId, userId);
             return ResponseEntity.ok(response);
