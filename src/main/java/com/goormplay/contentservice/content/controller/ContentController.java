@@ -55,16 +55,15 @@ public class ContentController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("releaseDate").descending());
         return ResponseEntity.ok(contentService.getRecommendedVideos(memberId,pageable));
     }
-    @GetMapping("/{videoId}")
-    public ResponseEntity<ContentDetailResponse> getContentDetail(@PathVariable String videoId,
+    @GetMapping("/detail")
+    public ResponseEntity<ContentDetailResponse> getContentDetail(@RequestParam String videoId,
                                                                   @Nullable Authentication authentication) {
         try {
-            String decodedVideoId = URLDecoder.decode(videoId, StandardCharsets.UTF_8);
             String userId = Optional.ofNullable(authentication)
                     .map(Authentication::getName)
                     .orElse(null);
 
-            ContentDetailResponse response = contentService.getContentDetailById(decodedVideoId, userId);
+            ContentDetailResponse response = contentService.getContentDetailById(videoId, userId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error getting content detail", e);
