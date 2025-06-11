@@ -5,14 +5,13 @@ import com.goormplay.contentservice.content.dto.*;
 import com.goormplay.contentservice.content.dto.response.ContentDetailResponse;
 import com.goormplay.contentservice.content.repository.ContentRepository;
 import jakarta.annotation.Nullable;
-import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class ContentService {
     public ContentDetailResponse getContentDetailById(String videoId, @Nullable String userId) {
         log.info("getContentDetailById called. userId: {}, videoId: {}", userId, videoId);
         VideoDTO content = contentRepository.findContentDetailByVideoId(videoId)
-                .orElseThrow(() -> new NotFoundException("Content not found"));
+                .orElseThrow(() -> new RuntimeException("Content not found"));
 
         // 리뷰 목록 조회
         List<ReviewDTO> reviews = contentReviewClient.getReviews(videoId);
