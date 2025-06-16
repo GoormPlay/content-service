@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "ui-service", configuration = FeignHeaderConfig.class)
+@FeignClient(name = "ui-service",
+        url = "http://ui-service.default.svc.cluster.local:8086",
+        configuration = FeignHeaderConfig.class)
 public interface ContentInteractionClient {
     @GetMapping("/ui/content/liked")
     boolean isContentLikedByUser(@RequestParam String videoId, @RequestParam String userId);
