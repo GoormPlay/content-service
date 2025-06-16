@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "ui-service",
-        url = "http://ui-service.default.svc.cluster.local:8086",
+        url = "http://ui-service.ui.svc.cluster.local:8086",
         configuration = FeignHeaderConfig.class)
 public interface ContentInteractionClient {
     @GetMapping("/ui/content/liked")

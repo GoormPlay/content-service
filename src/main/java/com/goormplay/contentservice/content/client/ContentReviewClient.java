@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 @FeignClient(name = "review-service",
-        url = "http://review-service.default.svc.cluster.local:8087",
+        url = "http://review-service.review.svc.cluster.local:8087",
         configuration = FeignHeaderConfig.class)
 public interface ContentReviewClient {
     @GetMapping("/review/{videoId}/list")
