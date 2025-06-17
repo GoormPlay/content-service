@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: content-service
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/GoormPlay/content-service.git
+    targetRevision: deploy
+    path: helm
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: content
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true

@@ -1,0 +1,11 @@
+image:
+  repository: roin09/content-service
+  tag: latest
+
+service:
+  port: 80
+  targetPort: 8083
+
+env:
+  useConfigMap: true
+  useSecret: true
