@@ -1,43 +1,47 @@
-image:
-  repository: roin09/content-service
-  tag: latest
+base-template:
+  nameOverride: content-service
+  fullnameOverride: content-service
 
-service:
-  port: 80
-  targetPort: 8083
+  image:
+    repository: roin09/content-service
+    tag: latest
 
-env:
-  useConfigMap: true
-  useSecret: true
+  service:
+    port: 80
+    targetPort: 8083
 
-replicaCount: 1
+  env:
+    useConfigMap: true
+    useSecret: true
 
-ingress:
-  enabled: false
-  
+  replicaCount: 1
 
-externalSecret:
-  enabled: true
-  refreshInterval: 1h
-  secretStore:
-    name: aws-secrets
-    kind: ClusterSecretStore
-  dataFromKey: content-service-secret
+  ingress:
+    enabled: 
+    host: 
 
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: node-type
-              operator: In
-              values:
-                - medium
+  externalSecret:
+    enabled: true
+    refreshInterval: 1h
+    secretStore:
+      name: aws-secrets
+      kind: ClusterSecretStore
+    dataFromKey: content-service-secret
 
-resources:
-  requests:
-    cpu: 300m
-    memory: 384Mi
-  limits:
-    cpu: 500m
-    memory: 512Mi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                  - medium
+
+  resources:
+    requests:
+      cpu: 300m
+      memory: 384Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
