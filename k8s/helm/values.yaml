@@ -15,6 +15,14 @@ replicaCount: 1
 ingress:
   enabled: false
 
+externalSecret:
+  enabled: true
+  refreshInterval: 1h
+  secretStore:
+    name: aws-secrets
+    kind: ClusterSecretStore
+  dataFromKey: content-service-secret
+
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
