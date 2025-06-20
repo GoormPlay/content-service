@@ -34,16 +34,7 @@ externalSecret:
     kind: ClusterSecretStore
   dataFromKey: content-service-secret
 
-affinity:
-  nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-            - key: node-type
-              operator: In
-              values:
-                - standard
+affinity: {}
 
 resources:
   requests:
