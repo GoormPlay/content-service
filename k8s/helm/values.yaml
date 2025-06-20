@@ -42,7 +42,7 @@ affinity:
             - key: node-type
               operator: In
               values:
-                - standard
+                - high
 
 resources:
   requests:
