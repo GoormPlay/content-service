@@ -24,7 +24,7 @@ hpa:
 
 ingress:
   enabled: false
-  host: ""
+  host: "api.aws-test-site.shop"
 
 externalSecret:
   enabled: true
@@ -42,7 +42,7 @@ affinity:
             - key: node-type
               operator: In
               values:
-                - high
+                - standard
 
 resources:
   requests:
