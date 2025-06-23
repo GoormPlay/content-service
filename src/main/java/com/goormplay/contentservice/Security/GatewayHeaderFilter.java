@@ -16,12 +16,22 @@ public class GatewayHeaderFilter implements Filter {
             throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) req;
+        String path = request.getRequestURI();
         log.info("request : 요청 들어옴");
+        log.info("request URI : {}", path);
+
+        // actuator는 예외 처리
+        if (path.startsWith("/actuator")) {
+            chain.doFilter(req, res);
+            return;
+        }
+
         String fromGateway = request.getHeader("X-From-Gateway");
-        log.info("request fromGateway : "+ fromGateway);
+        log.info("request fromGateway : {}", fromGateway);
         if (!"true".equals(fromGateway)) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid Request");
         }
+
         chain.doFilter(req, res); // 다음 필터로 요청 전달
     }
 }
