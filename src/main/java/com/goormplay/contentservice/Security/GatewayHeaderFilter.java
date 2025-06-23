@@ -21,7 +21,7 @@ public class GatewayHeaderFilter implements Filter {
         log.info("request URI : {}", path);
 
         // actuator는 예외 처리
-        if (path.startsWith("/actuator")) {
+        if (path.contains("/actuator")) {
             chain.doFilter(req, res);
             return;
         }
