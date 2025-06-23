@@ -9,6 +9,7 @@ on:
       - '**/build.gradle'
       - 'Dockerfile'
       - 'k8s/**'
+      - '**/build.yml'
 
 jobs:
   build:
@@ -30,9 +31,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+        
+      - name: Clean build directory
+        run: rm -rf build
 
       - name: Build with Gradle
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean bootJar --no-build-cache  
 
       - name: Find built JAR
         id: find_jar
